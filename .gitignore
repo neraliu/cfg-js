@@ -11,5 +11,6 @@ coverage
 docs
 dist
 
-# dot 
+# dot / png
 *.dot
+*.png
