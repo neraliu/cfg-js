@@ -1,2 +1,2 @@
-# cfg-js
-Control Flow Graph for JavaScripts
+Control Flow Graph JS (cfg-js)
+===============================

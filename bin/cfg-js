@@ -1,0 +1,56 @@
+#!/usr/bin/env node
+/* 
+Copyright (c) 2015, All rights reserved.
+Copyrights licensed under the New BSD License.
+See the accompanying LICENSE file for terms.
+
+Authors: Nera Liu <neraliu@gmail.com>
+*/
+(function() {
+
+    function printUsage() {
+        console.log("Usage: cfg-js ...[options] <js file>\n\n\
+Options:\n\
+\t-o\tOputput filename. The filename of the output dot file.\n\n\
+");
+    }
+
+    var Promise = require('bluebird'),
+        fs = Promise.promisifyAll(require("fs")),
+        argv = require('minimist')(process.argv.slice(2)),
+        CFGJS = require('../src/cfg-js.js');
+
+    var filePath = argv['_'][0],
+        outputFilePath = argv['o'];
+    if (outputFilePath != '')
+        outputFilePath = filePath + '.dot';
+
+    // TODO: update the README with version bump up
+    if (!filePath) {
+        printUsage();
+        process.exit(-1);
+    }
+
+    var data = fs.readFileSync(filePath, 'utf-8');
+    var config = {
+        'log': 'info',
+    };
+    var parser = new CFGJS(config);
+        astJson = parser.parse(data);
+    parser.traverse(astJson);
+
+    var output = 'digraph program {\n';
+    var paths = parser.getAllPaths();
+    paths.forEach(function(path, i) {
+        output += '\t' + path.join(' -> ') + '\n';
+    });
+    output += '}\n';
+    console.log(output);
+
+    fs.writeFileSync(outputFilePath, output);
+
+}).call(this);
+
+
+
+
