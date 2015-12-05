@@ -14,13 +14,20 @@ module.exports = function(grunt) {
         camelcase: true
       }
     },
+    run: {
+      options: {},
+      gendot : {
+        cmd: './scripts/gendot.sh',
+        args: []
+      }
+    },
     browserify: {
       standalone: {
         src: 'src/<%= pkg.name %>.js',
         dest: 'dist/<%= pkg.name %>.js',
         options: {
           browserifyOptions: {
-            standalone: 'TaintedJS'
+            standalone: 'CFGJS'
           }
         }
       },
@@ -70,8 +77,9 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-run');
 
-  grunt.registerTask('test', ['clean:buildResidues', 'jshint', 'dist', 'mocha_istanbul']);
+  grunt.registerTask('test', ['clean:buildResidues', 'jshint', 'run', 'dist', 'mocha_istanbul']);
   grunt.registerTask('dist', ['browserify', 'uglify']);
   grunt.registerTask('default', ['test']);
   grunt.registerTask('release', ['dist'])
