@@ -26,12 +26,14 @@ Authors: Nera Liu <neraliu@gmail.com>
                 var parser = new CFGJS(config);
 
                 var astJson = parser.parse(data);
-                parser.traverse(astJson);
+                parser.traverse(astJson, null);
 
                 var paths = parser.getAllPaths();
                 paths.forEach(function(path, i) {
                     expect(path.join(' -> ')).to.equal(testObj.paths[i]);
                 });
+
+                parser.output();
             });
         });
     });

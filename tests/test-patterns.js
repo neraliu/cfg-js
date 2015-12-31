@@ -6,6 +6,18 @@ See the accompanying LICENSE file for terms.
 (function() {
 
 var TestPatterns = [
+    { sourcefile: './tests/samples/0000-test.js',                     log: 'info' ,
+      paths: [
+        'Program -> VariableDeclaration -> VariableDeclarator -> Identifier',
+        'Program -> VariableDeclaration -> VariableDeclarator -> Identifier',
+        'Program -> IfStatement -> BinaryExpression -> Identifier',
+        'Program -> IfStatement -> BinaryExpression -> Identifier',
+        'Program -> IfStatement -> BlockStatement -> VariableDeclaration -> VariableDeclarator -> Identifier',
+        'Program -> IfStatement -> BlockStatement -> VariableDeclaration -> VariableDeclarator -> Identifier',
+        'Program -> VariableDeclaration -> VariableDeclarator -> Identifier',
+      ]
+    },
+/*
     { sourcefile: './tests/samples/0001-choice.js',                   log: 'info' ,
       paths: [
         'Program -> VariableDeclaration -> VariableDeclarator -> Identifier',
@@ -164,6 +176,7 @@ var TestPatterns = [
         'Program -> DebuggerStatement',
       ]
     },
+*/
 ];
 exports.TestPatterns = TestPatterns;
 

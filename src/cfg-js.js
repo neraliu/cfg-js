@@ -1,4 +1,4 @@
-/* 
+/*
 Copyright (c) 2015, All rights reserved.
 Copyrights licensed under the New BSD License.
 See the accompanying LICENSE file for terms.
@@ -11,15 +11,16 @@ Authors: Nera Liu <neraliu@gmail.com>
 
 /* import the required package */
 var esprima = require('esprima'),
+    Block = require('./block.js'),
     log = require('loglevel');
 
 /////////////////////////////////////////////////////
 //
-// @module CFGJS 
-// 
+// @module CFGJS
+//
 /////////////////////////////////////////////////////
 
-/** 
+/**
 * @module CFGJS
 */
 function CFGJS(config) {
@@ -27,8 +28,12 @@ function CFGJS(config) {
     this._config.log = config.log? config.log : "info";
     this._config.printPath = config.printPath ? config.printPath : false;
 
-    this._path = [];
-    this._paths = [];
+    this._currentPath = [];
+    this._allPaths = [];
+    
+    this._rootBlock = null;
+    this._currentBlock = null;
+
     log.setLevel(config.log);
 }
 
@@ -38,7 +43,7 @@ function CFGJS(config) {
 * @description
 */
 CFGJS.prototype.output = function() {
-    console.log(this._path);
+    this._rootBlock.printBlock();
 };
 
 /**
@@ -47,7 +52,7 @@ CFGJS.prototype.output = function() {
 * @description
 */
 CFGJS.prototype.getAllPaths = function() {
-    return this._paths;
+    return this._allPaths;
 };
 
 /**
@@ -56,7 +61,7 @@ CFGJS.prototype.getAllPaths = function() {
 * @description
 */
 CFGJS.prototype.parse = function(code) {
-    this._paths = [];
+    this._allPaths = [];
     return esprima.parse(code);
 };
 
@@ -66,14 +71,18 @@ CFGJS.prototype.parse = function(code) {
 * @description
 * https://github.com/estree/estree/blob/master/spec.md
 */
-CFGJS.prototype.traverse = function(node) {
+CFGJS.prototype.traverse = function(node, block) {
     var n = Array.isArray(node)? node : [node]; // we convert it into Array for iteration
 
-    for(var i=0,j=0,k=0,l=0;i<n.length;++i,j=0,k=0,l=0) {
+    // if block is null, we will create it dynamically.
+    var currentBlock = block? block : new Block(this._config);
+
+    for(var i=0;i<n.length;++i) {
         var type = n[i].type? n[i].type : '';
-        log.debug("type:"+type);
-	log.debug(n[i]);
-	this._path.push(type);
+        log.debug("type:"+type+",i:"+i);
+        log.debug(n[i]);
+
+        this._currentPath.push(type);
         switch(type) {
 
             // those are the left nodes of the AST
@@ -85,7 +94,7 @@ CFGJS.prototype.traverse = function(node) {
             case "Literal":
             case "RegExpLiteral":
             case "ThisExpression":
-                this._paths.push(this._path.slice(0));
+                this._allPaths.push(this._currentPath.slice(0));
                 this._printPaths();
                 break;
 
@@ -98,9 +107,8 @@ CFGJS.prototype.traverse = function(node) {
             case "ExpressionStatement":
             case "ForStatement":
             case "ForInStatement":
-            case "IfStatement":
             case "LabeledStatement":
-            case "LogicalExpression":
+	    case "LogicalExpression":
             case "MemberExpression":
             case "Property":
             case "ReturnStatement":
@@ -111,59 +119,89 @@ CFGJS.prototype.traverse = function(node) {
             case "UpdateExpression":
             case "WhileStatement":
             case "WithStatement":
-                this._traverse(n[i]);
+                this._traverse(n[i], currentBlock);
+                break;
+            case "IfStatement":
+                currentBlock.addStatement(n[i]);
+                this.traverse(n[i].test, currentBlock);
+
+                var b1, b2;
+                if (n[i].consequent && n[i].alternate) {
+                    b1 = this.traverse(n[i].consequent, null);
+                    currentBlock.addBlock(b1);
+                    b2 = this.traverse(n[i].alternate,  null);
+                    currentBlock.addBlock(b2);
+
+                    currentBlock = new Block(this._config);
+                    b1.addBlock(currentBlock);
+                    b2.addBlock(currentBlock);
+                } else if (n[i].consequent) {
+                    b1 = this.traverse(n[i].consequent, null);
+                    currentBlock.addBlock(b1);
+
+                    currentBlock = new Block(this._config);
+                    b1.addBlock(currentBlock);
+                }
                 break;
 
             // those nodes have object array that has type property
             // and the order of call traverse/_traverse are important
             case "ArrayExpression":
-                this.traverse(n[i].elements);
+                this.traverse(n[i].elements, currentBlock);
                 break;
 
             case "BlockStatement":
+                this.traverse(n[i].body, currentBlock);
+                break;
             case "Program":
-                this.traverse(n[i].body);
+                this._rootBlock = currentBlock;
+
+                this.traverse(n[i].body, currentBlock);
                 break;
 
             case "CallExpression":
             case "NewExpression":
-                this._traverse(n[i]);
-                this.traverse(n[i].arguments);
+                this._traverse(n[i], currentBlock);
+                this.traverse(n[i].arguments, currentBlock);
                 break;
 
             case "FunctionDeclaration":
             case "FunctionExpression":
-                this.traverse(n[i].params);
-                this._traverse(n[i]);
+                this.traverse(n[i].params, currentBlock);
+                this._traverse(n[i], currentBlock);
                 break;
 
             case "ObjectExpression":
-                this.traverse(n[i].properties);
+                this.traverse(n[i].properties, currentBlock);
                 break;
 
             case "SequenceExpression":
-                this.traverse(n[i].expressions);
+                this.traverse(n[i].expressions, currentBlock);
                 break;
 
             case "SwitchCase":
-                this._traverse(n[i]);
-                this.traverse(n[i].consequent);
+                this._traverse(n[i], currentBlock);
+                this.traverse(n[i].consequent, currentBlock);
                 break;
 
             case "SwitchStatement":
-                this._traverse(n[i]);
-                this.traverse(n[i].cases);
+                this._traverse(n[i], currentBlock);
+                this.traverse(n[i].cases, currentBlock);
                 break;
 
             case "VariableDeclaration":
-                this.traverse(n[i].declarations);
+                currentBlock.addStatement(n[i]);
+
+                this.traverse(n[i].declarations, currentBlock);
                 break;
 
             default:
                 break;
         } // end of swtich
-	this._path.pop();
+        this._currentPath.pop();
     }
+    
+    return currentBlock;
 };
 
 /**
@@ -172,10 +210,10 @@ CFGJS.prototype.traverse = function(node) {
 * @description
 * this is the helper function to traverse the AST.
 */
-CFGJS.prototype._traverse = function(node) {
+CFGJS.prototype._traverse = function(node, block) {
     for (var property in node) {
         if (node.hasOwnProperty(property) && node[property]!==null && node[property].hasOwnProperty("type")) {
-            this.traverse(node[property]);
+            this.traverse(node[property], block);
         }
     }
 };
@@ -187,7 +225,7 @@ CFGJS.prototype._traverse = function(node) {
 */
 CFGJS.prototype._printPaths = function(node) {
     if (this._config.printPath) {
-        this._path.forEach(function(e, i) {
+        this._currentPath.forEach(function(e, i) {
             process.stdout.write(e + " -> ");
         });
         process.stdout.write("\n");

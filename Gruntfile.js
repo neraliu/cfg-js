@@ -43,11 +43,11 @@ module.exports = function(grunt) {
         }
       },
       buildMin: {
-        src: ['src/polyfills/*.js', 'dist/<%= pkg.name %>.js'],
+        src: ['dist/<%= pkg.name %>.js'],
         dest: 'dist/<%= pkg.name %>.min.js'
       },
       buildMinWithVersion: {
-        src: ['src/polyfills/*.js', 'dist/<%= pkg.name %>.js'],
+        src: ['dist/<%= pkg.name %>.js'],
         dest: 'dist/<%= pkg.name %>.<%= pkg.version %>.min.js'
       }
     },
@@ -67,8 +67,8 @@ module.exports = function(grunt) {
       }
     },
     clean: {
-      all: ['artifacts', 'coverage', 'node_modules'],
-      buildResidues: ['artifacts', 'coverage']
+      all: ['artifacts', 'coverage', 'node_modules', 'tests/samples/*.dot', 'tests/samples/*.png'],
+      buildResidues: ['artifacts', 'coverage', 'tests/samples/*.dot', 'tests/samples/*.png']
     }
   });
 
@@ -79,7 +79,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-run');
 
-  grunt.registerTask('test', ['clean:buildResidues', 'jshint', 'run', 'dist', 'mocha_istanbul']);
+  grunt.registerTask('test', ['clean:buildResidues', 'jshint', 'dist', 'mocha_istanbul']);
   grunt.registerTask('dist', ['browserify', 'uglify']);
   grunt.registerTask('default', ['test']);
   grunt.registerTask('release', ['dist'])
