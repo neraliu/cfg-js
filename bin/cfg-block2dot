@@ -9,7 +9,7 @@ Authors: Nera Liu <neraliu@gmail.com>
 (function() {
 
     function printUsage() {
-        console.log("Usage: cfg-js ...[options] <js file>\n\n\
+        console.log("Usage: cfg-block2dot ...[options] <js file>\n\n\
 Options:\n\
 \t-o\tOputput filename. The filename of the output dot file.\n\n\
 ");
@@ -37,10 +37,11 @@ Options:\n\
     };
     var parser = new CFGJS(config);
         astJson = parser.parse(data);
-    parser.traverse(astJson);
+    parser.traverse(astJson, null);
+    parser.traverseCFG();
 
     var output = 'digraph program {\n';
-    var paths = parser.getAllPaths();
+    var paths = parser.getAllCFGPaths();
     paths.forEach(function(path, i) {
         output += '\t' + path.join(' -> ') + '\n';
     });
@@ -50,7 +51,3 @@ Options:\n\
     fs.writeFileSync(outputFilePath, output);
 
 }).call(this);
-
-
-
-

@@ -28,11 +28,12 @@ function CFGJS(config) {
     this._config.log = config.log? config.log : "info";
     this._config.printPath = config.printPath ? config.printPath : false;
 
-    this._currentPath = [];
-    this._allPaths = [];
+    this._currentASTPath = [];
+    this._allASTPaths = [];
     
-    this._rootBlock = null;
-    this._currentBlock = null;
+    this._rootCFG = null;
+    this._currentCFGPath = [];
+    this._allCFGPaths = [];
 
     log.setLevel(config.log);
 }
@@ -43,7 +44,7 @@ function CFGJS(config) {
 * @description
 */
 CFGJS.prototype.output = function() {
-    this._rootBlock.printBlock();
+    // console.log(this._rootCFG._blocks[1]._blocks);
 };
 
 /**
@@ -52,7 +53,42 @@ CFGJS.prototype.output = function() {
 * @description
 */
 CFGJS.prototype.getAllPaths = function() {
-    return this._allPaths;
+    return this._allASTPaths;
+};
+
+/**
+* @function CFGJS.getAllCFGPaths
+*
+* @description
+*/
+CFGJS.prototype.getAllCFGPaths = function() {
+    return this._allCFGPaths;
+};
+
+/**
+* @function CFGJS.traverseCFG
+*
+* @description
+* this is the helper function to traverse the CFG.
+*/
+CFGJS.prototype.traverseCFG = function(block) {
+    var currentBlock = block? block : this._rootCFG;
+    // log.debug(currentBlock); 
+
+    // if the currentBlock has statement, save it (i.e. content of the node)
+    if (currentBlock._statements.length !== 0) {
+        this._currentCFGPath.push(currentBlock._statements);
+    }
+
+    // traverse all blocks and pop back the block once returns
+    if (currentBlock._blocks.length !== 0) {
+        for(var i=0;i<currentBlock._blocks.length;++i) {
+            this.traverseCFG(currentBlock._blocks[i]);
+            this._currentCFGPath.pop();
+        }
+    } else {
+        this._allCFGPaths.push(this._currentCFGPath.slice(0));
+    }
 };
 
 /**
@@ -61,7 +97,7 @@ CFGJS.prototype.getAllPaths = function() {
 * @description
 */
 CFGJS.prototype.parse = function(code) {
-    this._allPaths = [];
+    this._allASTPaths = [];
     return esprima.parse(code);
 };
 
@@ -74,15 +110,13 @@ CFGJS.prototype.parse = function(code) {
 CFGJS.prototype.traverse = function(node, block) {
     var n = Array.isArray(node)? node : [node]; // we convert it into Array for iteration
 
-    // if block is null, we will create it dynamically.
     var currentBlock = block? block : new Block(this._config);
-
     for(var i=0;i<n.length;++i) {
         var type = n[i].type? n[i].type : '';
         log.debug("type:"+type+",i:"+i);
         log.debug(n[i]);
 
-        this._currentPath.push(type);
+        this._currentASTPath.push(type);
         switch(type) {
 
             // those are the left nodes of the AST
@@ -90,17 +124,20 @@ CFGJS.prototype.traverse = function(node, block) {
             case "ContinueStatement":
             case "DebuggerStatement":
             case "EmptyStatement":
-            case "Identifier":
-            case "Literal":
+            case "Identifier": 							// cfg
+            case "Literal":							// cfg
             case "RegExpLiteral":
             case "ThisExpression":
-                this._allPaths.push(this._currentPath.slice(0));
-                this._printPaths();
+                this._allASTPaths.push(this._currentASTPath.slice(0));
+                this._printPaths(); // reaching the left node and print it.
                 break;
 
             // those nodes having object has type property
-            case "AssignmentExpression":
-            case "BinaryExpression":
+            case "AssignmentExpression": 					// cfg
+                currentBlock.addStatement(type);
+                this._traverse(n[i], currentBlock);
+                break;
+            case "BinaryExpression": 						// cfg
             case "CatchClause":
             case "ConditionalExpression":
             case "DoWhileStatement":
@@ -121,27 +158,34 @@ CFGJS.prototype.traverse = function(node, block) {
             case "WithStatement":
                 this._traverse(n[i], currentBlock);
                 break;
-            case "IfStatement":
-                currentBlock.addStatement(n[i]);
+            case "IfStatement":  						// cfg
+                currentBlock.addStatement(type);
                 this.traverse(n[i].test, currentBlock);
 
                 var b1, b2;
-                if (n[i].consequent && n[i].alternate) {
+                if (n[i].consequent) {
                     b1 = this.traverse(n[i].consequent, null);
                     currentBlock.addBlock(b1);
+                }
+                if (n[i].alternate) {
                     b2 = this.traverse(n[i].alternate,  null);
                     currentBlock.addBlock(b2);
-
-                    currentBlock = new Block(this._config);
-                    b1.addBlock(currentBlock);
-                    b2.addBlock(currentBlock);
-                } else if (n[i].consequent) {
-                    b1 = this.traverse(n[i].consequent, null);
-                    currentBlock.addBlock(b1);
-
-                    currentBlock = new Block(this._config);
-                    b1.addBlock(currentBlock);
                 }
+
+                var newBlock = new Block(this._config);
+                newBlock.addStatement("IfStatementEnd");
+                if (b1) {
+                    b1.addBlock(newBlock);
+                }
+                if (b2) {
+                    b2.addBlock(newBlock);
+                }
+      
+                log.debug(currentBlock);
+                log.debug(b1);
+                log.debug(b2);
+                log.debug(newBlock);
+                currentBlock = newBlock;
                 break;
 
             // those nodes have object array that has type property
@@ -150,11 +194,11 @@ CFGJS.prototype.traverse = function(node, block) {
                 this.traverse(n[i].elements, currentBlock);
                 break;
 
-            case "BlockStatement":
+            case "BlockStatement": 						// cfg
                 this.traverse(n[i].body, currentBlock);
                 break;
-            case "Program":
-                this._rootBlock = currentBlock;
+            case "Program": 							// cfg
+                this._rootCFG = currentBlock;
 
                 this.traverse(n[i].body, currentBlock);
                 break;
@@ -189,8 +233,8 @@ CFGJS.prototype.traverse = function(node, block) {
                 this.traverse(n[i].cases, currentBlock);
                 break;
 
-            case "VariableDeclaration":
-                currentBlock.addStatement(n[i]);
+            case "VariableDeclaration":  					// cfg
+                currentBlock.addStatement(type);
 
                 this.traverse(n[i].declarations, currentBlock);
                 break;
@@ -198,7 +242,7 @@ CFGJS.prototype.traverse = function(node, block) {
             default:
                 break;
         } // end of swtich
-        this._currentPath.pop();
+        this._currentASTPath.pop();
     }
     
     return currentBlock;
@@ -225,7 +269,7 @@ CFGJS.prototype._traverse = function(node, block) {
 */
 CFGJS.prototype._printPaths = function(node) {
     if (this._config.printPath) {
-        this._currentPath.forEach(function(e, i) {
+        this._currentASTPath.forEach(function(e, i) {
             process.stdout.write(e + " -> ");
         });
         process.stdout.write("\n");

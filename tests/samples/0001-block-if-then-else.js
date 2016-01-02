@@ -4,5 +4,6 @@ if (s1 === s2) {
     var s3;
 } else {
     var s4;
+    s4 = s2 + 1;
 }
-var s5;
+s1 = 1;

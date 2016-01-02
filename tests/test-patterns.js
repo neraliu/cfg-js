@@ -5,19 +5,7 @@ See the accompanying LICENSE file for terms.
 */
 (function() {
 
-var TestPatterns = [
-    { sourcefile: './tests/samples/0000-test.js',                     log: 'info' ,
-      paths: [
-        'Program -> VariableDeclaration -> VariableDeclarator -> Identifier',
-        'Program -> VariableDeclaration -> VariableDeclarator -> Identifier',
-        'Program -> IfStatement -> BinaryExpression -> Identifier',
-        'Program -> IfStatement -> BinaryExpression -> Identifier',
-        'Program -> IfStatement -> BlockStatement -> VariableDeclaration -> VariableDeclarator -> Identifier',
-        'Program -> IfStatement -> BlockStatement -> VariableDeclaration -> VariableDeclarator -> Identifier',
-        'Program -> VariableDeclaration -> VariableDeclarator -> Identifier',
-      ]
-    },
-/*
+var TestASTPatterns = [
     { sourcefile: './tests/samples/0001-choice.js',                   log: 'info' ,
       paths: [
         'Program -> VariableDeclaration -> VariableDeclarator -> Identifier',
@@ -176,8 +164,25 @@ var TestPatterns = [
         'Program -> DebuggerStatement',
       ]
     },
-*/
 ];
-exports.TestPatterns = TestPatterns;
+exports.TestASTPatterns = TestASTPatterns;
+
+var TestCFGPatterns = [
+    { sourcefile: './tests/samples/0001-block-if-then-else.js',       log: 'info' ,
+      statements: [
+        [ [ 'VariableDeclaration', 'VariableDeclaration', 'IfStatement' ],
+          [ 'VariableDeclaration' ],
+          [ 'IfStatementEnd', 'AssignmentExpression' ] ],
+        [ [ 'VariableDeclaration', 'VariableDeclaration', 'IfStatement' ],
+          [ 'VariableDeclaration', 'AssignmentExpression' ],
+          [ 'IfStatementEnd', 'AssignmentExpression' ] ],
+      ],
+    },
+    { sourcefile: './tests/samples/0002-block-if-then-else.js',       log: 'debug' ,
+      statements: [
+      ],
+    },
+];
+exports.TestCFGPatterns = TestCFGPatterns;
 
 })();
