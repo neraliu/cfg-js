@@ -27,6 +27,7 @@ function Block(config) {
     this._config.log = config.log? config.log : "info";
     log.setLevel(config.log);
 
+    this._id = config.id? config.id : -1;
     this._statements = [];
     this._blocks = [];
 }

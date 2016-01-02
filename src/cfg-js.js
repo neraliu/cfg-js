@@ -27,11 +27,13 @@ function CFGJS(config) {
     this._config = config || {};
     this._config.log = config.log? config.log : "info";
     this._config.printPath = config.printPath ? config.printPath : false;
+    this._config.id = 0;
 
     this._currentASTPath = [];
     this._allASTPaths = [];
     
     this._rootCFG = null;
+
     this._currentCFGPath = [];
     this._allCFGPaths = [];
 
@@ -44,7 +46,6 @@ function CFGJS(config) {
 * @description
 */
 CFGJS.prototype.output = function() {
-    // console.log(this._rootCFG._blocks[1]._blocks);
 };
 
 /**
@@ -73,11 +74,11 @@ CFGJS.prototype.getAllCFGPaths = function() {
 */
 CFGJS.prototype.traverseCFG = function(block) {
     var currentBlock = block? block : this._rootCFG;
-    // log.debug(currentBlock); 
 
     // if the currentBlock has statement, save it (i.e. content of the node)
     if (currentBlock._statements.length !== 0) {
-        this._currentCFGPath.push(currentBlock._statements);
+        this._currentCFGPath.push(currentBlock._id+ ":" + currentBlock._statements);
+        // this._currentCFGPath.push(currentBlock._statements);
     }
 
     // traverse all blocks and pop back the block once returns
@@ -106,11 +107,21 @@ CFGJS.prototype.parse = function(code) {
 *
 * @description
 * https://github.com/estree/estree/blob/master/spec.md
+* this function traverses the same level in the AST through iterating the array of nodes.
+* by depth-first-search (DFS)
 */
 CFGJS.prototype.traverse = function(node, block) {
     var n = Array.isArray(node)? node : [node]; // we convert it into Array for iteration
 
-    var currentBlock = block? block : new Block(this._config);
+    var currentBlock, startBlock;
+    if (block) {
+        currentBlock = block;
+    } else {
+        this._config.id++;
+        currentBlock = new Block(this._config);
+    }
+    startBlock = currentBlock;
+
     for(var i=0;i<n.length;++i) {
         var type = n[i].type? n[i].type : '';
         log.debug("type:"+type+",i:"+i);
@@ -159,33 +170,33 @@ CFGJS.prototype.traverse = function(node, block) {
                 this._traverse(n[i], currentBlock);
                 break;
             case "IfStatement":  						// cfg
+                var leftBlock, rightBlock, endBlock, b;
                 currentBlock.addStatement(type);
                 this.traverse(n[i].test, currentBlock);
 
-                var b1, b2;
                 if (n[i].consequent) {
-                    b1 = this.traverse(n[i].consequent, null);
-                    currentBlock.addBlock(b1);
+                    leftBlock = this.traverse(n[i].consequent, null);
+                    currentBlock.addBlock(leftBlock);
                 }
                 if (n[i].alternate) {
-                    b2 = this.traverse(n[i].alternate,  null);
-                    currentBlock.addBlock(b2);
+                    rightBlock = this.traverse(n[i].alternate, null);
+                    currentBlock.addBlock(rightBlock);
                 }
 
-                var newBlock = new Block(this._config);
-                newBlock.addStatement("IfStatementEnd");
-                if (b1) {
-                    b1.addBlock(newBlock);
+                this._config.id++;
+                endBlock = new Block(this._config);
+                if (leftBlock) {
+                    b = this._getEndBlock(leftBlock);
+                    b.addBlock(endBlock);
                 }
-                if (b2) {
-                    b2.addBlock(newBlock);
+                if (rightBlock) {
+                    b = this._getEndBlock(rightBlock);
+                    b.addBlock(endBlock);
+                } else {
+                    currentBlock.addBlock(endBlock);
                 }
       
-                log.debug(currentBlock);
-                log.debug(b1);
-                log.debug(b2);
-                log.debug(newBlock);
-                currentBlock = newBlock;
+                currentBlock = endBlock;
                 break;
 
             // those nodes have object array that has type property
@@ -199,7 +210,6 @@ CFGJS.prototype.traverse = function(node, block) {
                 break;
             case "Program": 							// cfg
                 this._rootCFG = currentBlock;
-
                 this.traverse(n[i].body, currentBlock);
                 break;
 
@@ -245,7 +255,21 @@ CFGJS.prototype.traverse = function(node, block) {
         this._currentASTPath.pop();
     }
     
-    return currentBlock;
+    return startBlock;
+};
+
+/**
+* @function CFGJS._getEndBlock
+*
+* @description
+* traverse the block chain and return the end block.
+*/
+CFGJS.prototype._getEndBlock = function(block) {
+    if (block._blocks.length !== 0) {
+        return this._getEndBlock(block._blocks[0]); // assuming that all end at the same block, so travering index 0 is ok!
+    } else {
+        return block;
+    }
 };
 
 /**

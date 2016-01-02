@@ -168,20 +168,112 @@ var TestASTPatterns = [
 exports.TestASTPatterns = TestASTPatterns;
 
 var TestCFGPatterns = [
+    { sourcefile: './tests/samples/0000-block-if-then-else.js',       log: 'info' ,
+      paths: [
+        [ '1:VariableDeclaration,VariableDeclaration,IfStatement',
+          '2:VariableDeclaration',
+          '3:AssignmentExpression' ],
+        [ '1:VariableDeclaration,VariableDeclaration,IfStatement',
+          '3:AssignmentExpression' ], 
+      ],
+      blocks: { statements: ["VariableDeclaration","VariableDeclaration","IfStatement"],
+                blocks: [ { statements: ["VariableDeclaration"],
+                            blocks: [ { statements: ["AssignmentExpression"],
+                                       blocks: [] } ]
+                          },
+                          { statements: ["AssignmentExpression"],
+                            blocks: []
+                          } ]
+              },
+    },
     { sourcefile: './tests/samples/0001-block-if-then-else.js',       log: 'info' ,
-      statements: [
-        [ [ 'VariableDeclaration', 'VariableDeclaration', 'IfStatement' ],
-          [ 'VariableDeclaration' ],
-          [ 'IfStatementEnd', 'AssignmentExpression' ] ],
-        [ [ 'VariableDeclaration', 'VariableDeclaration', 'IfStatement' ],
-          [ 'VariableDeclaration', 'AssignmentExpression' ],
-          [ 'IfStatementEnd', 'AssignmentExpression' ] ],
+      paths: [
+        [ '1:VariableDeclaration,VariableDeclaration,IfStatement',
+          '2:VariableDeclaration',
+          '4:AssignmentExpression' ],
+        [ '1:VariableDeclaration,VariableDeclaration,IfStatement',
+          '3:VariableDeclaration,AssignmentExpression',
+          '4:AssignmentExpression' ],
       ],
+      blocks: { statements: ["VariableDeclaration","VariableDeclaration","IfStatement"],
+                blocks: [ { statements: ["VariableDeclaration"],
+                            blocks: [ { statements: ["AssignmentExpression"],
+                                        blocks: [] } ]
+                          },
+                          { statements: ["VariableDeclaration","AssignmentExpression"],
+                            blocks: [ { statements: ["AssignmentExpression"],
+                                        blocks: [] } ]
+                          } ]
+              },
     },
-    { sourcefile: './tests/samples/0002-block-if-then-else.js',       log: 'debug' ,
-      statements: [
+    { sourcefile: './tests/samples/0002-block-if-then-else.js',       log: 'info' ,
+      paths: [
+        [ '1:VariableDeclaration,VariableDeclaration,IfStatement',
+          '2:VariableDeclaration,IfStatement',
+          '3:AssignmentExpression',
+          '4:VariableDeclaration',
+          '6:AssignmentExpression' ],
+        [ '1:VariableDeclaration,VariableDeclaration,IfStatement',
+          '2:VariableDeclaration,IfStatement',
+          '4:VariableDeclaration',
+          '6:AssignmentExpression' ],
+        [ '1:VariableDeclaration,VariableDeclaration,IfStatement',
+          '5:VariableDeclaration,AssignmentExpression',
+          '6:AssignmentExpression' ],
       ],
+      blocks: { statements: ["VariableDeclaration","VariableDeclaration","IfStatement"],
+                blocks: [ { statements: ["VariableDeclaration","IfStatement"],
+                            blocks: [ { statements: ["AssignmentExpression"],
+                                        blocks: [ { statements: ["VariableDeclaration"],
+                                                    blocks: [ { statements: ["AssignmentExpression"],
+                                                                blocks: [] } ]
+                                                  } ]
+                                      },
+                                      { statements: ["VariableDeclaration"],
+                                        blocks: [ { statements: ["AssignmentExpression"],
+                                                    blocks: [] } ]
+                                      } ]
+                          },
+                          { statements: ["VariableDeclaration","AssignmentExpression"],
+                            blocks: [ { statements: ["AssignmentExpression"],
+                                        blocks: [] } ]
+                          } ] 
+              },
     },
+    { sourcefile: './tests/samples/0003-block-if-then-else.js',       log: 'info' ,
+      paths: [
+      ],
+      blocks: { statements: ["VariableDeclaration","VariableDeclaration","IfStatement"],
+                blocks: [ { statements: ["VariableDeclaration","IfStatement"],
+                            blocks: [ { statements: ["AssignmentExpression","IfStatement"],
+                                        blocks: [ { statements: ["AssignmentExpression"],
+                                                    blocks: [ { statements: [],
+                                                                blocks: [ { statements: ["VariableDeclaration"],
+                                                                            blocks: [ { statements: ["AssignmentExpression"],
+                                                                                        blocks: [] } ]
+                                                                          } ]
+                                                              } ]
+                                                  },
+                                                  { statements: ["AssignmentExpression"],
+                                                    blocks: [ { statements: [],
+                                                                blocks: [ { statements: ["VariableDeclaration"],
+                                                                            blocks: [ { statements: ["AssignmentExpression"],
+                                                                                        blocks: [] } ]
+                                                                          } ]
+                                                              } ]
+                                                  } ]
+                                      },
+                                      { statements: ["VariableDeclaration"],
+                                        blocks: [ { statements: ["AssignmentExpression"],
+                                                    blocks: [] } ]
+                                      } ]
+                          },
+                          { statements: ["VariableDeclaration","AssignmentExpression"],
+                            blocks: [ { statements: ["AssignmentExpression"],
+                                        blocks: [] } ]
+                          } ]
+              },
+    }
 ];
 exports.TestCFGPatterns = TestCFGPatterns;
 
