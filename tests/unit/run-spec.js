@@ -54,14 +54,12 @@ Authors: Nera Liu <neraliu@gmail.com>
                 var r = parser.getRootCFG();
                 testCFG(r, testObj.blocks);
 
-                if (testObj.paths.length != 0) {
-                    var paths = parser.getAllCFGPaths();
-                    paths.forEach(function(path, i) {
-                        path.forEach(function(p, j) {
-                            expect(p).to.equal(testObj.paths[i][j]);
-                        });
+                var paths = parser.getAllCFGPaths();
+                paths.forEach(function(path, i) {
+                    path.forEach(function(p, j) {
+                        expect(p).to.equal(testObj.paths[i][j]);
                     });
-                }
+                });
             });
         });
 
