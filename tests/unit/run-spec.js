@@ -14,9 +14,9 @@ Authors: Nera Liu <neraliu@gmail.com>
         testPatterns = require('../test-patterns.js'),
         CFGJS = require('../../src/cfg-js.js');
 
-    describe("Test Suite", function() {
-        it("basic test", function() {
-            testPatterns.TestPatterns.forEach(function(testObj) {
+    describe("Control Flow Graph Test Suite", function() {
+        it("AST tests", function() {
+            testPatterns.TestASTPatterns.forEach(function(testObj) {
                 filePath = testObj.sourcefile;
                 console.log("testing.... "+filePath);
                 var data = fs.readFileSync(filePath, 'utf-8');
@@ -26,7 +26,8 @@ Authors: Nera Liu <neraliu@gmail.com>
                 var parser = new CFGJS(config);
 
                 var astJson = parser.parse(data);
-                parser.traverse(astJson);
+                parser.traverse(astJson, null);
+                parser.output();
 
                 var paths = parser.getAllPaths();
                 paths.forEach(function(path, i) {
@@ -34,6 +35,40 @@ Authors: Nera Liu <neraliu@gmail.com>
                 });
             });
         });
+
+        it("CFG tests", function() {
+            testPatterns.TestCFGPatterns.forEach(function(testObj) {
+                filePath = testObj.sourcefile;
+                console.log("testing.... "+filePath);
+                var data = fs.readFileSync(filePath, 'utf-8');
+
+                var config = {};
+                config.log = testObj.log;
+                var parser = new CFGJS(config);
+
+                var astJson = parser.parse(data);
+                parser.traverse(astJson, null);
+                parser.traverseCFG();
+                parser.output();
+
+                var r = parser.getRootCFG();
+                testCFG(r, testObj.blocks);
+
+                var paths = parser.getAllCFGPaths();
+                paths.forEach(function(path, i) {
+                    path.forEach(function(p, j) {
+                        expect(p).to.equal(testObj.paths[i][j]);
+                    });
+                });
+            });
+        });
+
+        var testCFG = function(node, testNode) {
+            expect(node._statements).to.deep.equal(testNode.statements);
+            for (var i=0;i<node._blocks.length;++i) {
+                testCFG(node._blocks[i], testNode.blocks[i]);
+            }
+        }
     });
 
 }());
