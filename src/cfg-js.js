@@ -58,6 +58,15 @@ CFGJS.prototype.getAllPaths = function() {
 };
 
 /**
+* @function CFGJS.getRootCFG
+*
+* @description
+*/
+CFGJS.prototype.getRootCFG = function() {
+    return this._rootCFG;
+};
+
+/**
 * @function CFGJS.getAllCFGPaths
 *
 * @description

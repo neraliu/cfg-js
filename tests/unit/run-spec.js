@@ -51,6 +51,9 @@ Authors: Nera Liu <neraliu@gmail.com>
                 parser.traverseCFG();
                 parser.output();
 
+                var r = parser.getRootCFG();
+                testCFG(r, testObj.blocks);
+
                 if (testObj.paths.length != 0) {
                     var paths = parser.getAllCFGPaths();
                     paths.forEach(function(path, i) {
@@ -61,6 +64,13 @@ Authors: Nera Liu <neraliu@gmail.com>
                 }
             });
         });
+
+        var testCFG = function(node, testNode) {
+            expect(node._statements).to.deep.equal(testNode.statements);
+            for (var i=0;i<node._blocks.length;++i) {
+                testCFG(node._blocks[i], testNode.blocks[i]);
+            }
+        }
     });
 
 }());
