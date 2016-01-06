@@ -46,6 +46,7 @@ function CFGJS(config) {
 * @description
 */
 CFGJS.prototype.output = function() {
+    // console.log(JSON.stringify(this._rootCFG));
 };
 
 /**
@@ -158,26 +159,42 @@ CFGJS.prototype.traverse = function(node, block) {
             case "BinaryExpression": 						// cfg
             case "CatchClause":
             case "ConditionalExpression":
-            case "DoWhileStatement":
             case "ExpressionStatement":
-            case "ForStatement":
-            case "ForInStatement":
-            case "LabeledStatement":
+            case "ForStatement":						// cfg?
+            case "ForInStatement":						// cfg?
+            case "LabeledStatement":						// cfg?
 	    case "LogicalExpression":
             case "MemberExpression":
             case "Property":
             case "ReturnStatement":
             case "ThrowStatement":
             case "TryStatement":
-            case "VariableDeclarator":
+            case "VariableDeclarator":						// cfg
             case "UnaryExpression":
             case "UpdateExpression":
-            case "WhileStatement":
             case "WithStatement":
                 this._traverse(n[i], currentBlock);
                 break;
+
+            case "DoWhileStatement":						// cfg
+            case "WhileStatement":						// cfg
+                var whileBlock, whileEndBlock;
+                currentBlock.addStatement(type);
+                this.traverse(n[i].test, currentBlock);
+
+                whileBlock = this.traverse(n[i].body, null);
+                currentBlock.addBlock(whileBlock); 				// link the currentBlock to the whileBlock
+
+                this._config.id++;
+                whileEndBlock = new Block(this._config);
+                whileBlock.addBlock(whileEndBlock); 				// link the whileBlock to the whileEndBlock
+                currentBlock.addBlock(whileEndBlock);				// link the currentBlock to the whileEndBlock
+
+                currentBlock = whileEndBlock;					// update the currentBlock to whileEndBlock
+                break;
+
             case "IfStatement":  						// cfg
-                var leftBlock, rightBlock, endBlock, b;
+                var leftBlock, rightBlock, ifEndBlock, b;
                 currentBlock.addStatement(type);
                 this.traverse(n[i].test, currentBlock);
 
@@ -191,19 +208,19 @@ CFGJS.prototype.traverse = function(node, block) {
                 }
 
                 this._config.id++;
-                endBlock = new Block(this._config);
+                ifEndBlock = new Block(this._config);
                 if (leftBlock) {
                     b = this._getEndBlock(leftBlock);
-                    b.addBlock(endBlock);
+                    b.addBlock(ifEndBlock);
                 }
                 if (rightBlock) {
                     b = this._getEndBlock(rightBlock);
-                    b.addBlock(endBlock);
+                    b.addBlock(ifEndBlock);
                 } else {
-                    currentBlock.addBlock(endBlock);
+                    currentBlock.addBlock(ifEndBlock);
                 }
       
-                currentBlock = endBlock;
+                currentBlock = ifEndBlock;
                 break;
 
             // those nodes have object array that has type property
@@ -240,12 +257,12 @@ CFGJS.prototype.traverse = function(node, block) {
                 this.traverse(n[i].expressions, currentBlock);
                 break;
 
-            case "SwitchCase":
+            case "SwitchCase":							// cfg?
                 this._traverse(n[i], currentBlock);
                 this.traverse(n[i].consequent, currentBlock);
                 break;
 
-            case "SwitchStatement":
+            case "SwitchStatement":						// cfg?
                 this._traverse(n[i], currentBlock);
                 this.traverse(n[i].cases, currentBlock);
                 break;

@@ -51,15 +51,16 @@ Authors: Nera Liu <neraliu@gmail.com>
                 parser.traverseCFG();
                 parser.output();
 
-                var r = parser.getRootCFG();
-                testCFG(r, testObj.blocks);
-
                 var paths = parser.getAllCFGPaths();
+console.log(paths);
                 paths.forEach(function(path, i) {
                     path.forEach(function(p, j) {
                         expect(p).to.equal(testObj.paths[i][j]);
                     });
                 });
+
+                var r = parser.getRootCFG();
+                testCFG(r, testObj.blocks);
             });
         });
 

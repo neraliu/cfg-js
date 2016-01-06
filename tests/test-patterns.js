@@ -6,7 +6,7 @@ See the accompanying LICENSE file for terms.
 (function() {
 
 var TestASTPatterns = [
-    { sourcefile: './tests/samples/0001-choice.js',                   log: 'info' ,
+    { sourcefile: './tests/samples/0001-choice.js', log: 'info' ,
       paths: [
         'Program -> VariableDeclaration -> VariableDeclarator -> Identifier',
         'Program -> VariableDeclaration -> VariableDeclarator -> Identifier',
@@ -30,7 +30,7 @@ var TestASTPatterns = [
         'Program -> SwitchStatement -> SwitchCase -> BreakStatement',
       ] 
     },
-    { sourcefile: './tests/samples/0002-function.js',                 log: 'info',
+    { sourcefile: './tests/samples/0002-function.js', log: 'info',
       paths: [
         'Program -> FunctionDeclaration -> Identifier',
         'Program -> FunctionDeclaration -> Identifier',
@@ -42,7 +42,7 @@ var TestASTPatterns = [
         'Program -> VariableDeclaration -> VariableDeclarator -> FunctionExpression -> BlockStatement -> ReturnStatement -> Identifier',
       ]
     },
-    { sourcefile: './tests/samples/0003-try-catch-finally.js',        log: 'info',
+    { sourcefile: './tests/samples/0003-try-catch-finally.js', log: 'info',
       paths: [
         'Program -> TryStatement -> BlockStatement -> VariableDeclaration -> VariableDeclarator -> Identifier',
         'Program -> TryStatement -> BlockStatement -> VariableDeclaration -> VariableDeclarator -> Literal',
@@ -54,7 +54,7 @@ var TestASTPatterns = [
         'Program -> TryStatement -> BlockStatement -> VariableDeclaration -> VariableDeclarator -> Literal',
       ]
     },
-    { sourcefile: './tests/samples/0004-loop.js',                     log: 'info',
+    { sourcefile: './tests/samples/0004-loop.js', log: 'info',
       paths: [
         'Program -> WhileStatement -> Literal',
         'Program -> WhileStatement -> BlockStatement -> IfStatement -> Literal',
@@ -66,8 +66,8 @@ var TestASTPatterns = [
         'Program -> ForStatement -> UpdateExpression -> Identifier',
         'Program -> ForStatement -> BlockStatement -> IfStatement -> Literal',
         'Program -> ForStatement -> BlockStatement -> IfStatement -> BlockStatement -> ContinueStatement',
-        'Program -> DoWhileStatement -> BlockStatement -> IfStatement -> Literal',
         'Program -> DoWhileStatement -> Literal',
+        'Program -> DoWhileStatement -> BlockStatement -> IfStatement -> Literal',
         'Program -> VariableDeclaration -> VariableDeclarator -> Identifier',
         'Program -> VariableDeclaration -> VariableDeclarator -> ObjectExpression -> Property -> Identifier',
         'Program -> VariableDeclaration -> VariableDeclarator -> ObjectExpression -> Property -> Literal',
@@ -80,7 +80,7 @@ var TestASTPatterns = [
         'Program -> ForInStatement -> BlockStatement -> IfStatement -> Literal',
       ]
     },
-    { sourcefile: './tests/samples/0005-expression.js',               log: 'info',
+    { sourcefile: './tests/samples/0005-expression.js', log: 'info',
       paths: [
         'Program -> FunctionDeclaration -> Identifier',
         'Program -> FunctionDeclaration -> BlockStatement -> ExpressionStatement -> AssignmentExpression -> MemberExpression -> ThisExpression',
@@ -120,14 +120,14 @@ var TestASTPatterns = [
         'Program -> ExpressionStatement -> Identifier',
       ]
     },
-    { sourcefile: './tests/samples/0006-with.js',                     log: 'info',
+    { sourcefile: './tests/samples/0006-with.js', log: 'info',
       paths: [
         'Program -> WithStatement -> Identifier',
         'Program -> WithStatement -> BlockStatement -> VariableDeclaration -> VariableDeclarator -> Identifier',
         'Program -> WithStatement -> BlockStatement -> VariableDeclaration -> VariableDeclarator -> Literal',
       ]
     },
-    { sourcefile: './tests/samples/0007-label.js',                    log: 'info',
+    { sourcefile: './tests/samples/0007-label.js', log: 'info',
       paths: [
         'Program -> VariableDeclaration -> VariableDeclarator -> Identifier',
         'Program -> VariableDeclaration -> VariableDeclarator -> Identifier',
@@ -157,7 +157,7 @@ var TestASTPatterns = [
         'Program -> EmptyStatement',
       ]
     },
-    { sourcefile: './tests/samples/0008-debugger.js',                 log: 'info',
+    { sourcefile: './tests/samples/0008-debugger.js', log: 'info',
       paths: [
         'Program -> FunctionDeclaration -> Identifier',
         'Program -> FunctionDeclaration -> BlockStatement -> DebuggerStatement',
@@ -168,7 +168,7 @@ var TestASTPatterns = [
 exports.TestASTPatterns = TestASTPatterns;
 
 var TestCFGPatterns = [
-    { sourcefile: './tests/samples/0000-block-if-then-else.js',       log: 'info' ,
+    { sourcefile: './tests/samples/0000-block-if-then-else.js', log: 'info' ,
       paths: [
         [ '1:VariableDeclaration,VariableDeclaration,IfStatement',
           '2:VariableDeclaration',
@@ -186,7 +186,7 @@ var TestCFGPatterns = [
                           } ]
               },
     },
-    { sourcefile: './tests/samples/0001-block-if-then-else.js',       log: 'info' ,
+    { sourcefile: './tests/samples/0001-block-if-then-else.js', log: 'info' ,
       paths: [
         [ '1:VariableDeclaration,VariableDeclaration,IfStatement',
           '2:VariableDeclaration',
@@ -206,7 +206,7 @@ var TestCFGPatterns = [
                           } ]
               },
     },
-    { sourcefile: './tests/samples/0002-block-if-then-else.js',       log: 'info' ,
+    { sourcefile: './tests/samples/0002-block-if-then-else.js', log: 'info' ,
       paths: [
         [ '1:VariableDeclaration,VariableDeclaration,IfStatement',
           '2:VariableDeclaration,IfStatement',
@@ -240,7 +240,7 @@ var TestCFGPatterns = [
                           } ] 
               },
     },
-    { sourcefile: './tests/samples/0003-block-if-then-else.js',       log: 'info' ,
+    { sourcefile: './tests/samples/0003-block-if-then-else.js', log: 'info' ,
       paths: [
         [ '1:VariableDeclaration,VariableDeclaration,IfStatement',
           '2:VariableDeclaration,IfStatement',
@@ -294,7 +294,41 @@ var TestCFGPatterns = [
                                         blocks: [] } ]
                           } ]
               },
-    }
+    },
+    { sourcefile: './tests/samples/0000-while.js', log: 'info' ,
+      paths: [
+        [ '1:VariableDeclaration,VariableDeclaration,WhileStatement',
+          '2:VariableDeclaration',
+          '3:AssignmentExpression' ],
+        [ '1:VariableDeclaration,VariableDeclaration,WhileStatement',
+          '3:AssignmentExpression' ],
+      ],
+      blocks: { statements: ["VariableDeclaration","VariableDeclaration","WhileStatement"],
+                blocks: [ { statements: ["VariableDeclaration"],
+                            blocks: [ { statements: ["AssignmentExpression"],
+                                        blocks: [] } ]
+                          },
+                          { statements: ["AssignmentExpression"],
+                            blocks: [] } ]
+              },
+    },
+    { sourcefile: './tests/samples/0000-do-while.js', log: 'info' ,
+      paths: [
+        [ '1:VariableDeclaration,VariableDeclaration,DoWhileStatement',
+          '2:VariableDeclaration',
+          '3:AssignmentExpression' ],
+        [ '1:VariableDeclaration,VariableDeclaration,DoWhileStatement',
+          '3:AssignmentExpression' ],
+      ],
+      blocks: { statements: ["VariableDeclaration","VariableDeclaration","DoWhileStatement"],
+                blocks: [ { statements: ["VariableDeclaration"],
+                            blocks: [ { statements: ["AssignmentExpression"],
+                                        blocks: [] } ]
+                          },
+                          { statements: ["AssignmentExpression"],
+                            blocks: [] } ]
+              },
+    },
 ];
 exports.TestCFGPatterns = TestCFGPatterns;
 
