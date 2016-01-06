@@ -79,7 +79,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-run');
 
-  grunt.registerTask('test', ['clean:buildResidues', 'jshint', 'dist', 'mocha_istanbul']);
+  grunt.registerTask('test', ['clean:buildResidues', 'jshint', 'mocha_istanbul', 'dist']);
   grunt.registerTask('dist', ['browserify', 'uglify']);
   grunt.registerTask('default', ['test']);
   grunt.registerTask('release', ['dist'])
