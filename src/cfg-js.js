@@ -85,7 +85,8 @@ CFGJS.prototype.traverseCFG = function(block) {
     var currentBlock = block? block : this._rootCFG;
 
     // if the currentBlock has statement, save it (i.e. content of the node)
-    this._currentCFGPath.push(currentBlock._id+ ":" + currentBlock._statements);
+    var stmt = currentBlock._id + ":" + currentBlock._statements.join(',');
+    this._currentCFGPath.push(stmt);
 
     // traverse all blocks and pop back the block once returns
     if (currentBlock._blocks.length !== 0) {

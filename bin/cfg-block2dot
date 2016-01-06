@@ -40,10 +40,30 @@ Options:\n\
     parser.traverse(astJson, null);
     parser.traverseCFG();
 
+    var blocks = [];
     var output = 'digraph program {\n';
     var paths = parser.getAllCFGPaths();
-    paths.forEach(function(path, i) {
-        output += '\t' + path.join(' -> ') + '\n';
+    paths.forEach(function(path) {
+        output += "\t";
+        path.forEach(function(p) {
+            var s = p.split(":"),
+                id = s[0],
+                stmts = s[1].split(",");
+            output += "block_" + id + " -> ";
+
+            if (!blocks[id]) {
+                blocks[id] = '<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="0">';
+                blocks[id] += '<TR><TD>block_'+id+'</TD></TR>';
+                stmts.forEach(function(stmt) {
+                    blocks[id] += '<TR><TD>'+stmt+'</TD></TR>';
+                });
+                blocks[id] += '</TABLE>';
+            }
+        });
+        output += "end" + ";\n";
+    });
+    blocks.forEach(function(block, id) {
+        output += "\tblock_" + id + " [shape=none, margin=0, label=<" + block + ">];\n";
     });
     output += '}\n';
     console.log(output);

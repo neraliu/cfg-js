@@ -174,7 +174,7 @@ var TestCFGPatterns = [
           '2:VariableDeclaration',
           '3:AssignmentExpression' ],
         [ '1:VariableDeclaration,VariableDeclaration,IfStatement',
-          '3:AssignmentExpression' ], 
+          '3:AssignmentExpression' ],
       ],
       blocks: { statements: ["VariableDeclaration","VariableDeclaration","IfStatement"],
                 blocks: [ { statements: ["VariableDeclaration"],

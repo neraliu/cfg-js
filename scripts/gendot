@@ -1,0 +1,27 @@
+#!/usr/bin/env node
+/* 
+Copyright (c) 2015, All rights reserved.
+Copyrights licensed under the New BSD License.
+See the accompanying LICENSE file for terms.
+
+Authors: Nera Liu <neraliu@gmail.com>
+*/
+(function() {
+
+    var testPatterns = require('../tests/test-patterns.js'),
+        child_process = require('child_process');
+
+    var cmd = "./bin/cfg-ast2dot";
+    testPatterns.TestASTPatterns.forEach(function(testObj) {
+    });
+
+    cmd = "./bin/cfg-block2dot";
+    testPatterns.TestCFGPatterns.forEach(function(testObj) {
+        var command = cmd + " " + testObj.sourcefile;
+        var o = child_process.execSync(command);
+
+        command = "dot -O -Tpng " + testObj.sourcefile + ".dot"
+        o = child_process.execSync(command);
+    });
+
+}).call(this);
