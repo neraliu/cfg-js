@@ -5,9 +5,9 @@ Control Flow Graph JS (cfg-js)
 
 ## Quick Start
 
-### How to generate the dot file
+### How to generate the CFG in dot file
 ```sh
-$ ./bin/cfg-js <javascript file>
+$ ./bin/cfg-block2dot <javascript file>
 ```
 
 ## Development
