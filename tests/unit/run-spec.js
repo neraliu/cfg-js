@@ -51,20 +51,21 @@ Authors: Nera Liu <neraliu@gmail.com>
                 parser.traverseCFG();
                 parser.output();
 
+                var r = parser.getRootCFG();
+                testCFG(r, testObj.blocks);
+
                 var paths = parser.getAllCFGPaths();
-console.log(paths);
+console.log(paths)
                 paths.forEach(function(path, i) {
                     path.forEach(function(p, j) {
                         expect(p).to.equal(testObj.paths[i][j]);
                     });
                 });
-
-                var r = parser.getRootCFG();
-                testCFG(r, testObj.blocks);
             });
         });
 
         var testCFG = function(node, testNode) {
+            expect(node._id).to.deep.equal(testNode.id);
             expect(node._statements).to.deep.equal(testNode.statements);
             for (var i=0;i<node._blocks.length;++i) {
                 testCFG(node._blocks[i], testNode.blocks[i]);

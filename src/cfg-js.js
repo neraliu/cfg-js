@@ -178,49 +178,52 @@ CFGJS.prototype.traverse = function(node, block) {
 
             case "DoWhileStatement":						// cfg
             case "WhileStatement":						// cfg
-                var whileBlock, whileEndBlock;
+                var whileBlock, whileEndBlock, b1;
                 currentBlock.addStatement(type);
                 this.traverse(n[i].test, currentBlock);
 
-                whileBlock = this.traverse(n[i].body, null);
+                whileBlock = this.traverse(n[i].body, null);			// n[i].body is a block statement
                 currentBlock.addBlock(whileBlock); 				// link the currentBlock to the whileBlock
 
                 this._config.id++;
                 whileEndBlock = new Block(this._config);
-                whileBlock.addBlock(whileEndBlock); 				// link the whileBlock to the whileEndBlock
+                if (whileBlock) {
+                    b1 = this._getLastBlock(whileBlock);			// get the last block from the whileBlock and link the whileEndBlock
+                    b1.addBlock(whileEndBlock); 				// link the last block to the whileEndBlock
+                }
                 currentBlock.addBlock(whileEndBlock);				// link the currentBlock to the whileEndBlock
 
                 currentBlock = whileEndBlock;					// update the currentBlock to whileEndBlock
                 break;
 
             case "IfStatement":  						// cfg
-                var leftBlock, rightBlock, ifEndBlock, b;
+                var leftBlock, rightBlock, ifEndBlock, b2;
                 currentBlock.addStatement(type);
                 this.traverse(n[i].test, currentBlock);
 
                 if (n[i].consequent) {
-                    leftBlock = this.traverse(n[i].consequent, null);
-                    currentBlock.addBlock(leftBlock);
+                    leftBlock = this.traverse(n[i].consequent, null);		// n[i].consequent is a block statement
+                    currentBlock.addBlock(leftBlock);				// link the leftBlock to currentBlock
                 }
                 if (n[i].alternate) {
-                    rightBlock = this.traverse(n[i].alternate, null);
-                    currentBlock.addBlock(rightBlock);
+                    rightBlock = this.traverse(n[i].alternate, null);		// n[i].alternate is a block statement
+                    currentBlock.addBlock(rightBlock);				// link the rightBlock to currentBlock
                 }
 
                 this._config.id++;
                 ifEndBlock = new Block(this._config);
                 if (leftBlock) {
-                    b = this._getEndBlock(leftBlock);
-                    b.addBlock(ifEndBlock);
+                    b2 = this._getLastBlock(leftBlock);				// get the last block from the leftBlock and link the ifEndBlock
+                    b2.addBlock(ifEndBlock);					// link the last block to the ifEndBlock
                 }
                 if (rightBlock) {
-                    b = this._getEndBlock(rightBlock);
-                    b.addBlock(ifEndBlock);
+                    b2 = this._getLastBlock(rightBlock);			// get the last block from the rightBlock and link the ifEndBlock
+                    b2.addBlock(ifEndBlock);					// link the last block to the ifEndBlock
                 } else {
                     currentBlock.addBlock(ifEndBlock);
                 }
       
-                currentBlock = ifEndBlock;
+                currentBlock = ifEndBlock;					// update the currentBlock to ifEndBlock
                 break;
 
             // those nodes have object array that has type property
@@ -283,14 +286,14 @@ CFGJS.prototype.traverse = function(node, block) {
 };
 
 /**
-* @function CFGJS._getEndBlock
+* @function CFGJS._getLastBlock
 *
 * @description
 * traverse the block chain and return the end block.
 */
-CFGJS.prototype._getEndBlock = function(block) {
+CFGJS.prototype._getLastBlock = function(block) {
     if (block._blocks.length !== 0) {
-        return this._getEndBlock(block._blocks[0]); // assuming that all end at the same block, so travering index 0 is ok!
+        return this._getLastBlock(block._blocks[0]); // assuming that all end at the same block, so travering index 0 is ok!
     } else {
         return block;
     }

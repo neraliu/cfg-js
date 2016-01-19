@@ -176,12 +176,12 @@ var TestCFGPatterns = [
         [ '1:VariableDeclaration,VariableDeclaration,IfStatement',
           '3:AssignmentExpression' ],
       ],
-      blocks: { statements: ["VariableDeclaration","VariableDeclaration","IfStatement"],
-                blocks: [ { statements: ["VariableDeclaration"],
-                            blocks: [ { statements: ["AssignmentExpression"],
+      blocks: { id: 1, statements: ["VariableDeclaration","VariableDeclaration","IfStatement"],
+                blocks: [ { id: 2, statements: ["VariableDeclaration"],
+                            blocks: [ { id: 3, statements: ["AssignmentExpression"],
                                        blocks: [] } ]
                           },
-                          { statements: ["AssignmentExpression"],
+                          { id: 3, statements: ["AssignmentExpression"],
                             blocks: []
                           } ]
               },
@@ -195,13 +195,13 @@ var TestCFGPatterns = [
           '3:VariableDeclaration,AssignmentExpression',
           '4:AssignmentExpression' ],
       ],
-      blocks: { statements: ["VariableDeclaration","VariableDeclaration","IfStatement"],
-                blocks: [ { statements: ["VariableDeclaration"],
-                            blocks: [ { statements: ["AssignmentExpression"],
+      blocks: { id: 1, statements: ["VariableDeclaration","VariableDeclaration","IfStatement"],
+                blocks: [ { id: 2, statements: ["VariableDeclaration"],
+                            blocks: [ { id: 4, statements: ["AssignmentExpression"],
                                         blocks: [] } ]
                           },
-                          { statements: ["VariableDeclaration","AssignmentExpression"],
-                            blocks: [ { statements: ["AssignmentExpression"],
+                          { id: 3, statements: ["VariableDeclaration","AssignmentExpression"],
+                            blocks: [ { id: 4, statements: ["AssignmentExpression"],
                                         blocks: [] } ]
                           } ]
               },
@@ -221,21 +221,21 @@ var TestCFGPatterns = [
           '5:VariableDeclaration,AssignmentExpression',
           '6:AssignmentExpression' ],
       ],
-      blocks: { statements: ["VariableDeclaration","VariableDeclaration","IfStatement"],
-                blocks: [ { statements: ["VariableDeclaration","IfStatement"],
-                            blocks: [ { statements: ["AssignmentExpression"],
-                                        blocks: [ { statements: ["VariableDeclaration"],
-                                                    blocks: [ { statements: ["AssignmentExpression"],
+      blocks: { id: 1, statements: ["VariableDeclaration","VariableDeclaration","IfStatement"],
+                blocks: [ { id: 2, statements: ["VariableDeclaration","IfStatement"],
+                            blocks: [ { id: 3, statements: ["AssignmentExpression"],
+                                        blocks: [ { id: 4, statements: ["VariableDeclaration"],
+                                                    blocks: [ { id: 6, statements: ["AssignmentExpression"],
                                                                 blocks: [] } ]
                                                   } ]
                                       },
-                                      { statements: ["VariableDeclaration"],
-                                        blocks: [ { statements: ["AssignmentExpression"],
+                                      { id: 4, statements: ["VariableDeclaration"],
+                                        blocks: [ { id: 6, statements: ["AssignmentExpression"],
                                                     blocks: [] } ]
                                       } ]
                           },
-                          { statements: ["VariableDeclaration","AssignmentExpression"],
-                            blocks: [ { statements: ["AssignmentExpression"],
+                          { id: 5, statements: ["VariableDeclaration","AssignmentExpression"],
+                            blocks: [ { id: 6, statements: ["AssignmentExpression"],
                                         blocks: [] } ]
                           } ] 
               },
@@ -264,33 +264,33 @@ var TestCFGPatterns = [
           '8:VariableDeclaration,AssignmentExpression',
           '9:AssignmentExpression' ]
       ],
-      blocks: { statements: ["VariableDeclaration","VariableDeclaration","IfStatement"],
-                blocks: [ { statements: ["VariableDeclaration","IfStatement"],
-                            blocks: [ { statements: ["AssignmentExpression","IfStatement"],
-                                        blocks: [ { statements: ["AssignmentExpression"],
-                                                    blocks: [ { statements: [],
-                                                                blocks: [ { statements: ["VariableDeclaration"],
-                                                                            blocks: [ { statements: ["AssignmentExpression"],
+      blocks: { id: 1, statements: ["VariableDeclaration","VariableDeclaration","IfStatement"],
+                blocks: [ { id: 2, statements: ["VariableDeclaration","IfStatement"],
+                            blocks: [ { id: 3, statements: ["AssignmentExpression","IfStatement"],
+                                        blocks: [ { id: 4, statements: ["AssignmentExpression"],
+                                                    blocks: [ { id: 6, statements: [],
+                                                                blocks: [ { id: 7, statements: ["VariableDeclaration"],
+                                                                            blocks: [ { id: 9, statements: ["AssignmentExpression"],
                                                                                         blocks: [] } ]
                                                                           } ]
                                                               } ]
                                                   },
-                                                  { statements: ["AssignmentExpression"],
-                                                    blocks: [ { statements: [],
-                                                                blocks: [ { statements: ["VariableDeclaration"],
-                                                                            blocks: [ { statements: ["AssignmentExpression"],
+                                                  { id: 5, statements: ["AssignmentExpression"],
+                                                    blocks: [ { id: 6, statements: [],
+                                                                blocks: [ { id: 7, statements: ["VariableDeclaration"],
+                                                                            blocks: [ { id: 9, statements: ["AssignmentExpression"],
                                                                                         blocks: [] } ]
                                                                           } ]
                                                               } ]
                                                   } ]
                                       },
-                                      { statements: ["VariableDeclaration"],
-                                        blocks: [ { statements: ["AssignmentExpression"],
+                                      { id: 7, statements: ["VariableDeclaration"],
+                                        blocks: [ { id: 9, statements: ["AssignmentExpression"],
                                                     blocks: [] } ]
                                       } ]
                           },
-                          { statements: ["VariableDeclaration","AssignmentExpression"],
-                            blocks: [ { statements: ["AssignmentExpression"],
+                          { id: 8, statements: ["VariableDeclaration","AssignmentExpression"],
+                            blocks: [ { id: 9, statements: ["AssignmentExpression"],
                                         blocks: [] } ]
                           } ]
               },
@@ -303,14 +303,87 @@ var TestCFGPatterns = [
         [ '1:VariableDeclaration,VariableDeclaration,WhileStatement',
           '3:AssignmentExpression' ],
       ],
-      blocks: { statements: ["VariableDeclaration","VariableDeclaration","WhileStatement"],
-                blocks: [ { statements: ["VariableDeclaration"],
-                            blocks: [ { statements: ["AssignmentExpression"],
+      blocks: { id: 1, statements: ["VariableDeclaration","VariableDeclaration","WhileStatement"],
+                blocks: [ { id: 2, statements: ["VariableDeclaration"],
+                            blocks: [ { id: 3, statements: ["AssignmentExpression"],
                                         blocks: [] } ]
                           },
-                          { statements: ["AssignmentExpression"],
+                          { id: 3, statements: ["AssignmentExpression"],
                             blocks: [] } ]
               },
+    },
+    { sourcefile: './tests/samples/0001-while.js', log: 'info' ,
+      paths: [
+        [ '1:VariableDeclaration,WhileStatement',
+          '2:AssignmentExpression',
+          '3:VariableDeclaration,DoWhileStatement',
+          '4:IfStatement',
+          '5:VariableDeclaration',
+          '7:',
+          '8:AssignmentExpression' ],
+        [ '1:VariableDeclaration,WhileStatement',
+          '2:AssignmentExpression',
+          '3:VariableDeclaration,DoWhileStatement',
+          '4:IfStatement',
+          '6:VariableDeclaration,AssignmentExpression',
+          '7:',
+          '8:AssignmentExpression' ],
+        [ '1:VariableDeclaration,WhileStatement',
+          '2:AssignmentExpression',
+          '3:VariableDeclaration,DoWhileStatement',
+          '8:AssignmentExpression' ],
+        [ '1:VariableDeclaration,WhileStatement',
+          '3:VariableDeclaration,DoWhileStatement',
+          '4:IfStatement',
+          '5:VariableDeclaration',
+          '7:',
+          '8:AssignmentExpression' ],
+        [ '1:VariableDeclaration,WhileStatement',
+          '3:VariableDeclaration,DoWhileStatement',
+          '4:IfStatement',
+          '6:VariableDeclaration,AssignmentExpression',
+          '7:',
+          '8:AssignmentExpression' ],
+        [ '1:VariableDeclaration,WhileStatement',
+          '3:VariableDeclaration,DoWhileStatement',
+          '8:AssignmentExpression' ] 
+      ],
+      blocks: { id: 1, statements: ["VariableDeclaration","WhileStatement"],
+                blocks: [ { id: 2, statements: ["AssignmentExpression"],
+                            blocks: [ { id: 3, statements: ["VariableDeclaration","DoWhileStatement"],
+                                        blocks: [ { id: 4, statements: ["IfStatement"],
+                                                    blocks: [ { id: 5, statements: ["VariableDeclaration"],
+                                                                blocks: [ { id: 7, statements: [],
+                                                                            blocks: [ { id: 8, statements: ["AssignmentExpression"],
+                                                                                               blocks: [] } ] } ]
+                                                              },
+                                                              { id: 6, statements: ["VariableDeclaration","AssignmentExpression"],
+                                                                blocks: [ { id: 7, statements: [],
+                                                                            blocks: [ { id: 8, statements: ["AssignmentExpression"],
+                                                                                               blocks: [] } ] } ]
+                                                              } ]
+                                                  },
+                                                  { id: 8, statements: ["AssignmentExpression"],
+                                                    blocks: [] } ]
+                                      } ]
+                          },
+                          { id: 3, statements: ["VariableDeclaration","DoWhileStatement"],
+                            blocks: [ { id: 4, statements: ["IfStatement"],
+                                        blocks: [ { id: 5, statements: ["VariableDeclaration"],
+                                                    blocks: [ { id: 7, statements: [],
+                                                                blocks: [ { id: 8, statements: ["AssignmentExpression"],
+                                                                                   blocks: [] } ] } ]
+                                                  },
+                                                  { id: 6, statements: ["VariableDeclaration","AssignmentExpression"],
+                                                    blocks: [ { id: 7, statements: [],
+                                                                blocks: [ { id: 8, statements: ["AssignmentExpression"],
+                                                                                   blocks: [] } ] } ]
+                                                  } ]
+                                      },
+                                      { id: 8, statements: ["AssignmentExpression"],
+                                        blocks: [] } ]
+                          } ]
+              }
     },
     { sourcefile: './tests/samples/0000-do-while.js', log: 'info' ,
       paths: [
@@ -320,12 +393,12 @@ var TestCFGPatterns = [
         [ '1:VariableDeclaration,VariableDeclaration,DoWhileStatement',
           '3:AssignmentExpression' ],
       ],
-      blocks: { statements: ["VariableDeclaration","VariableDeclaration","DoWhileStatement"],
-                blocks: [ { statements: ["VariableDeclaration"],
-                            blocks: [ { statements: ["AssignmentExpression"],
+      blocks: { id: 1, statements: ["VariableDeclaration","VariableDeclaration","DoWhileStatement"],
+                blocks: [ { id: 2, statements: ["VariableDeclaration"],
+                            blocks: [ { id: 3, statements: ["AssignmentExpression"],
                                         blocks: [] } ]
                           },
-                          { statements: ["AssignmentExpression"],
+                          { id: 3, statements: ["AssignmentExpression"],
                             blocks: [] } ]
               },
     },
